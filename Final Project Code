@@ -1,0 +1,117 @@
+import tkinter as tk
+from tkinter import messagebox
+
+#functions for matrix operations
+def add_matrices(matrix1, matrix2):
+    result = []
+    for i in range(3):
+        row = []
+        for j in range(3):
+            row.append(matrix1[i][j] + matrix2[i][j])
+        result.append(row)
+    return result
+
+def subtract_matrices(matrix1, matrix2):
+    result = []
+    for i in range(3):
+        row = []
+        for j in range(3):
+            row.append(matrix1[i][j] - matrix2[i][j])
+        result.append(row)
+    return result
+
+def multiply_matrices(matrix1, matrix2):
+    result = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                result[i][j] += matrix1[i][k] * matrix2[k][j]
+    return result
+
+#get matrix values from entries
+def get_matrix(entries):
+    matrix = []
+    for i in range(3):
+        row = []
+        for j in range(3):
+            value = entries[i][j].get()
+            if not value.replace('.', '', 1).isdigit():
+                return None
+            row.append(float(value))
+        matrix.append(row)
+    return matrix
+
+#functions for each operation in operation handler
+def handle_addition():
+    handle_operation("Addition")
+
+def handle_subtraction():
+    handle_operation("Subtraction")
+
+def handle_multiplication():
+    handle_operation("Multiplication")
+
+#general operation handler
+def handle_operation(operation):
+    matrix1 = get_matrix(matrix1_entries)
+    if matrix1 is None:
+        messagebox.showerror("Error", "Invalid input in Matrix 1! Please enter numbers only.")
+        return
+
+    matrix2 = get_matrix(matrix2_entries)
+    if matrix2 is None:
+        messagebox.showerror("Error", "Invalid input in Matrix 2! Please enter numbers only.")
+        return
+
+    if operation == "Addition":
+        result = add_matrices(matrix1, matrix2)
+    elif operation == "Subtraction":
+        result = subtract_matrices(matrix1, matrix2)
+    elif operation == "Multiplication":
+        result = multiply_matrices(matrix1, matrix2)
+    else:
+        result = "Invalid Operation"
+
+    result_text = ""
+    for row in result:
+        row_text = "\t".join(map(str, row))
+        result_text += row_text + "\n"
+
+    messagebox.showinfo("Result", result_text)
+
+#GUI setup
+root = tk.Tk()
+root.title("Matrix Operations")
+root.geometry("600x400")
+
+frame_matrix1 = tk.LabelFrame(root, text="Matrix 1 (3x3)", padx=20, pady=20, font=("Arial", 12))
+frame_matrix1.grid(row=0, column=0, padx=20, pady=20)
+matrix1_entries = []
+for i in range(3):
+    row_entries = []
+    for j in range(3):
+        entry = tk.Entry(frame_matrix1, width=10, font=("Arial", 14))
+        entry.grid(row=i, column=j, padx=10, pady=10)
+        row_entries.append(entry)
+    matrix1_entries.append(row_entries)
+
+frame_matrix2 = tk.LabelFrame(root, text="Matrix 2 (3x3)", padx=20, pady=20, font=("Arial", 12))
+frame_matrix2.grid(row=0, column=1, padx=20, pady=20)
+matrix2_entries = []
+for i in range(3):
+    row_entries = []
+    for j in range(3):
+        entry = tk.Entry(frame_matrix2, width=10, font=("Arial", 14))
+        entry.grid(row=i, column=j, padx=10, pady=10)
+        row_entries.append(entry)
+    matrix2_entries.append(row_entries)
+
+button_frame = tk.Frame(root, padx=20, pady=20)
+button_frame.grid(row=1, column=0, columnspan=2)
+
+tk.Button(button_frame, text="Add", command=handle_addition, font=("Arial", 14), width=10).grid(row=0, column=0, padx=10, pady=10)
+tk.Button(button_frame, text="Subtract", command=handle_subtraction, font=("Arial", 14), width=10).grid(row=0, column=1, padx=10, pady=10)
+tk.Button(button_frame, text="Multiply", command=handle_multiplication, font=("Arial", 14), width=10).grid(row=0, column=2, padx=10, pady=10)
+
+root.mainloop()
+
